@@ -2,15 +2,13 @@
   <div class="points__form">
     <div class="input__wrp">
       <span>Координата Х</span>
-      <input :disabled="dotesTotal === limit" v-model="x" type="number" />
+      <input @input="xInputHandler" :value="x" type="number" />
     </div>
     <div class="input__wrp">
       <span>Координата Y</span>
-      <input :disabled="dotesTotal === limit" v-model="y" type="number" />
+      <input @input="yInputHandler" :value="y" type="number" />
     </div>
-    <button :disabled="dotesTotal === limit" @click="saveCoordinate">
-      Сохранить точку
-    </button>
+    <button @click="saveCoordinate">Сохранить точку</button>
     <button :disabled="dotesTotal < 4" @click="() => cb()">Обработать</button>
     <button @click="$emit('clear')">Очистить</button>
   </div>
@@ -27,13 +25,30 @@ export default {
   props: {
     cb: Function,
     dotesTotal: Number,
-    limit: Number,
+    limitX: Number,
+    limitY: Number,
   },
   methods: {
     saveCoordinate() {
       this.$emit("save", { x: +this.x, y: +this.y });
       this.x = 0;
       this.y = 0;
+    },
+    xInputHandler(e) {
+      if (+e.target.value > this.limitX) {
+        e.target.value = this.limitX;
+        this.x = this.limitX;
+        return;
+      }
+      this.x = +e.target.value;
+    },
+    yInputHandler(e) {
+      if (+e.target.value > this.limitY) {
+        e.target.value = this.limitY;
+        this.y = this.limitY;
+        return;
+      }
+      this.y = +e.target.value;
     },
   },
 };

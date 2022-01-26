@@ -1,6 +1,11 @@
 <template>
   <div class="field">
-    <svg class="field__svg" viewport="0 0 400 400" width="400" height="400">
+    <svg
+      class="field__svg"
+      :viewport="`0 0 ${width} ${height}`"
+      :width="width"
+      :height="height"
+    >
       <text
         v-for="(coordinate, idx) of coordinates"
         :x="coordinate.x + 4"
@@ -38,6 +43,14 @@
 export default {
   props: {
     coordinates: Array,
+    height: {
+      type: Number,
+      default: 350,
+    },
+    width: {
+      type: Number,
+      default: 350,
+    },
   },
   computed: {
     lineCoordinate() {

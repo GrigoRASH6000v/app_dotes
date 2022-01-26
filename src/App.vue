@@ -4,14 +4,15 @@
       Задать входные данные
     </button>
     <points-form
-      :limit="limitDotes"
+      :limitX="width"
+      :limitY="height"
       :dotesTotal="dotes.length"
       v-else
       @save="saveDote"
       @clear="clearDotes"
       :cb="tempCheck"
     />
-    <field :coordinates="dotes" />
+    <field :width="width" :height="height" :coordinates="dotes" />
   </div>
 </template>
 
@@ -23,7 +24,8 @@ export default {
   name: "App",
   data() {
     return {
-      limitDotes: 4,
+      width: 350,
+      height: 350,
       setCoordinate: false,
       dotes,
       ctx: null,
@@ -43,16 +45,16 @@ export default {
   },
   methods: {
     init() {
-      if (this.dotes.length > this.limitDotes - 1) {
+      if (this.dotes.length > 3) {
         this.tempCheck();
       }
     },
-    arrayReplace(array) {
-      let newArray = [...array];
-      let a = newArray[1];
-      newArray[1] = newArray[2];
-      newArray[2] = a;
-      return newArray;
+    arrayReplace(start, end) {
+      let newArray = [...this.dotes];
+      let a = newArray[start];
+      newArray[start] = newArray[end];
+      newArray[end] = a;
+      this.dotes = newArray;
     },
     saveDote(values) {
       this.dotes.push(values);
@@ -60,36 +62,37 @@ export default {
     clearDotes() {
       this.dotes = [];
     },
+
     tempCheck() {
-      let result = this.CrossingCheck(
-        this.dotes[0],
-        this.dotes[1],
-        this.dotes[2],
-        this.dotes[3]
-      );
-      if (!result) return this.dotes;
-      this.dotes = this.arrayReplace(this.dotes);
+      let checkedElements1 = [0, 1];
+      let checkedElements2 = [1, 2];
+      let result = false;
+      while (checkedElements1[1] < this.dotes.length - 1) {
+        while (checkedElements2[1] < this.dotes.length) {
+          result = this.crossingCheck(
+            this.dotes[checkedElements1[0]],
+            this.dotes[checkedElements1[1]],
+            this.dotes[checkedElements2[0]],
+            this.dotes[checkedElements2[1]]
+          );
+          if (result) break;
+          ++checkedElements2[0];
+          ++checkedElements2[1];
+        }
+        if (result) break;
+        ++checkedElements1[0];
+        ++checkedElements1[1];
+
+        checkedElements2[0] = checkedElements1[0] + 1;
+        checkedElements2[1] = checkedElements1[1] + 1;
+      }
+      if (result) {
+        this.arrayReplace(checkedElements1[1], checkedElements2[0]);
+        this.tempCheck();
+      }
+      return;
     },
-    IntersectionY(a1, b1, c1, a2, b2, c2) {
-      let d, dy, pointy;
-      d = a1 * b2 - b1 * a2;
-      dy = -a1 * c2 + c1 * a2;
-      pointy = dy / d;
-      return pointy;
-    },
-    IntersectionX(a1, b1, c1, a2, b2, c2) {
-      let d, dx, pointx;
-      d = a1 * b2 - b1 * a2;
-      dx = -c1 * b2 + b1 * c2;
-      pointx = dx / d;
-      return pointx;
-    },
-    EquationOfTheLine(p1, p2) {
-      this.A = p2.y - p1.y;
-      this.B = p1.x - p2.x;
-      this.C = -p1.x * (p2.y - p1.y) + p1.y * (p2.x - p1.x);
-    },
-    CrossingCheck(p1, p2, p3, p4) {
+    crossingCheck(p1, p2, p3, p4) {
       let v1, v2, v3, v4;
 
       v1 = this.vectorProduct(

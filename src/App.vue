@@ -12,7 +12,12 @@
       @clear="clearDotes"
       :cb="tempCheck"
     />
-    <field :width="width" :height="height" :coordinates="dotes" />
+    <field
+      @save="saveDote"
+      :width="width"
+      :height="height"
+      :coordinates="dotes"
+    />
   </div>
 </template>
 

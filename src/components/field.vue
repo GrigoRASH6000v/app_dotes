@@ -1,6 +1,7 @@
 <template>
   <div class="field">
     <svg
+      @click="(e) => $emit('save', { x: e.layerX, y: e.layerY })"
       class="field__svg"
       :viewport="`0 0 ${width} ${height}`"
       :width="width"

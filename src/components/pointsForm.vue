@@ -40,12 +40,22 @@ export default {
         this.x = this.limitX;
         return;
       }
+      if (+e.target.value < 0) {
+        e.target.value = 0;
+        this.x = 0;
+        return;
+      }
       this.x = +e.target.value;
     },
     yInputHandler(e) {
       if (+e.target.value > this.limitY) {
         e.target.value = this.limitY;
         this.y = this.limitY;
+        return;
+      }
+      if (+e.target.value < 0) {
+        e.target.value = 0;
+        this.y = 0;
         return;
       }
       this.y = +e.target.value;
